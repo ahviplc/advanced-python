@@ -1,1 +1,263 @@
+# 虚拟文件系统和文件
+linux/unix系统下，文件系统由三部分组成：
+- 超级块，存放文件系统本身的结构信息
+- inode表，每个文件都有一个inode，用来保存文件的属性，inode的位置被称为文件的inode号，inode号是文件的唯一标识。
+- 数据区，存放文件的内容。
+## 磁盘文件与设备文件
+在unix系统中，通过虚拟文件系统的抽象，每个设备都被当做一个文件，每个文件都有一个文件名，一个inode号，一个文件所有者，一个权限位的集合和最近修改时间。
+
+且通常表示设备的文件存放在目录/dev中，但是可以在任何目录下创建设备文件。
+
+# 目录和链接
+目录是一种特殊的文件，目录是名字和指针的列表，目录中的每个入口指向一个文件或目录，目录包含了父目录和子目录的入口。
+
+连接可以分为硬链接和软链接（符号链接）。 
+硬链接：同一个inode号在不同的目录文件中有不同的文件名，即不同目录下的不同文件名的文件共享同一个inode号，也就是本质是同一个文件，但是为了共享被放到不同的目录下。 
+软连接：通过名字引用文件，即引用的是目录。
+
+# 文件描述符和标准输入，输出，错误
+新建文件后，操作系统会自动返回一个文件描述符，作为系统对文件操作的入口
+```
+>>> a = open('1.txt','w+')
+>>> print(a.fileno())
+3
+```
+unix进程使用文件描述符0，1，2作为标准输入，输出和错误的通道，并且通常通过shell运行系统工具时，stdin,stdout,stderr连接在终端上，工具从键盘读取数据并且把输出和错误信息写到屏幕。
+
+当进程请求一个新的文件描述符时，系统内核将最低可用的文件描述符赋给它，所以上面新建文件的描述符为3。
+```
+>>> import sys
+>>> sys.stdin.fileno()
+0
+>>> sys.stdout.fileno()
+1
+>>> sys.stderr.fileno()
+2
+```
+我们可以通过对stdin,stdout读写，在屏幕上进行输入输出
+
+```
+>>> sys.stdout.write('a')
+a1
+>>> sys.stdout.write('a12')
+a123
+>>> sys.stdout.write('a12344')
+a123446
+```
+## 重定向与管道
+
+利用上面的特性我们先close(0),fd = open(),新文件的文件描述符就变为０，就可以重定位到标准输入，即新打开的文件被当做标准输入。
+
+管道也是类似，新建管道文件，然后新建两个进程，然后通过重定向两个进程的标准输入为管道文件的读写端，实现两个进程通过管道的通信。
+
+# 常用的文件API
+## 文件读写
+Python3 
+```
+f=open('py3.txt','wt'，encoding='utf8')
+
+f.write('l love you')
+
+f.close()
+
+f=open('py3.txt','rt',encoding='utf8')
+
+s=f.read()
+
+print(s)
+```
+
+## 处理二进制文件
+可通过struct模块进行处理
+
+## 设置文件缓冲
+- 全缓冲 
+
+open函数的buffering设置为大于1的整数n,n为缓冲区大小
+```
+f = open('demo2.txt','w',buffering=2048)
+```
+- 行缓冲
+
+open函数的buffering设置为1
+```
+f = open('demo2.txt','w',buffering=1)
+```
+换行符结尾为一行 
+- 没有缓冲
+
+open函数的buffering设置为0
+```
+f = open('demo2.txt','w',buffering=0)
+```
+## 将文件映射到内存
+```
+import mmap
+import os
+f = open('demo.bin','r+b')
+
+m=mmap.mmap(f.fileno(),0,access=mmap.ACCESS_WRITE)
+m[0]
+m[10:20]
+m=mmap.mmap(f.fileno(),mmap.PAGESIZE*8,access=mmap.ACCESS_WRITE,offset=mmap.PAGESIZE*4)
+```
+
+## 访问修改文件状态
+- 访问文件状态
+1. 系统调用，使用os模块下的三个系统调用stat,fstat,lstat获取文件状态 
+1. 快速函数，标准库中os.path下一些函数，使用起来更加简洁
+```
+import os,stat
+ s = os.stat('a.txt')
+ s.st_mode
+ stat.S_ISDIR(s.st_mode)
+ stat.S_ISREG(s.st_mode)
+ s.st_mode & stat.IRUSR
+ s.st_mode & stat.IXUSR
+ import time
+ time.localtime(s.st_atime)
+ s.st_size
+
+ os.path.isdir('x.txt')
+ os.path.islink('x.txt')
+ os.path.isfile('x.txt')
+
+ os.path.getatime('a.txt')
+ os.path.getsize('a.txt')
+ ```
+ - 修改文件状态
+ 
+给所有的```.py,.sh```结尾的文件加上可执行权限
+ ```
+ l = [name for name in os.listdir('.') if name.endswith(('.sh','.py'))]
+for x in l:
+    os.chmod(x,os.stat('1.py').st_mode|stat.S_IXUSR)
+```
+ ## 使用临时文件
+ ```
+ from tempfile import TemporaryFile,NamedTemporaryFile
+f = TemporaryFile()
+f.write('abcd'*10000)
+f.seek(0)
+f.read(100)
+
+ntf = NamedTemporaryFile()
+ntf.name//临时文件的路径
+ntf = NamedTemporaryFile(delete=False)
+```
+# 常见格式文件的读写
+## csv文件
+```
+>>> file = open('mycsv.csv')
+>>> writer =csv.writer(file)
+>>> writer.writerow(['Date','Open','Low','Close','Volume','Adj Close'])
+38
+
+>>> import csv
+>>> file = open('mycsv.csv','r+')
+>>> reader=csv.reader(file)
+>>> for x in reader:
+...     print(x)
+... 
+['Date', 'Open', 'Low', 'Close', 'Volume', 'Adj Close']
+```
+
+## json文件
+序列化：将对象的状态信息转换为可以存储或可以通过网络传输的过程，传输的格式可以是JSON，XML等。反序列化就是从存储区域（JSON，XML）读取反序列化对象的状态，重新创建该对象。
+```
+# dump功能
+ # 将数据通过特殊的形式转换为所有程序语言都认识的字符串，并写入文件
+ with open('D:/tmp.json', 'w') as f:
+     json.dump(data, f)
+ # load功能
+ # 从数据文件中读取数据,并将json编码的字符串转换为python的数据结构
+ with open('D:/tmp.json', 'r') as f:
+     data = json.load(f)
+```
+## xml文件
+- 解析xml文件
+
+```
+from xml.etree.ElementTree import parse
+f = open('demo.xml')
+et = parse(f)
+root = et.getroot()
+root.tag
+root.attrib
+root.text
+root.text.strip()
+root.getchildren()
+for child in root:
+    print child.get('name')
+
+
+root.find('country')
+root.findall('country')
+root.iterfind('country')
+for e in root.iterfind('country'):
+    print e.get('name')
+
+root.findall('rank')
+root.iter('rank')
+
+root.findall('country/*')
+root.findall('.//rank/..')
+root.findall('country[@name]')
+```
+
+- 构建
+
+```
+from xml.etree.ElementTree import Element,ElementTree
+e=Element('Date')
+e.set('name','abc')
+from xml.etree.ElementTree import tostring
+tostring(e)
+e.text = '123'
+tostring(e)
+e2=Element('Row')
+e3=Element('Open')
+e3.text = '8.80'
+e2.append(e3)
+tostring(e2)
+e.append(e2)
+tostring(e)
+
+et=ElementTree(e)
+et.write('demo.xml')
+
+
+import csv
+from xml.etree.ElementTree import Element,ElementTree
+
+def csvToxml(fname):
+    with open(fname,'rb') as f:
+        reader = csv.reader(f)
+        headers = reader.next()
+
+        root = Element('Data')
+        for row in reader:
+            eRow = Element('Row')
+            root.append(eRow)
+            for tag,text in zip(headers,row):
+                e = Element(tag)
+                e.text = text
+                eRow.append(e)
+    pretty(root)
+    return ElementTree(root)
+
+et = csvToxml('pingan.csv')
+et.write('pingan.xml')
+
+def pretty(e,level=0):
+    if len(e)>0:
+        e.text = '\n'+'\t'+(level+1)
+        for child in e：
+            pretty(child,level+1)
+        child.tail = child.tail[:-1]
+    e.tail='\n'+'\t'*level
+```
+## Excel
+使用第三方库xlrd xlw进行读写
+
 
