@@ -12,12 +12,6 @@
 - 知道python大多数常用的标准库以及其用途。
 - 知道os和sys库常用的方法，和操作文件和目录的方式。
 - 知道python中datetime库的常用操作。
-```python
-from datetiem import datetime
-now = datetime.now()
-cday = datetime.strptime('2015-6-1 18:19:59', '%Y-%m-%d %H:%M:%S')
-https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/001431937554888869fb52b812243dda6103214cd61d0c2000
-```
 - 知道普通文件/二进制文件读写的方式，知道StringIO和BytesIO的用途。
 > StringIO和BytesIO用于内存读写
 - 知道以单下划线开头、双下划线开头和双下划线包围的变量分别代表着什么含义。
