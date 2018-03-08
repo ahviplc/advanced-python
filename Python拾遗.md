@@ -1,3 +1,4 @@
+https://zhuanlan.zhihu.com/p/33266239
 # 语法
 - 知道python的语法，缩进和符号对应的含义。
 - 知道PEP8常见的范式以及代码格式化方法。
@@ -41,9 +42,12 @@
 
 # 数据结构
 - 知道list，tuple，dict，set等的时间复杂度和空间复杂度。
+> http://www.orangecube.net/python-time-complexity
 - 知道dict和set的常见操作，知道set之间集合运算的语法糖。
 - 知道python中dict的底层实现，以及与OrderDict的关系。
+https://github.com/python/cpython/blob/master/Lib/collections/__init__.py
 - 知道dict和UserDict的关系，以及为什么有UserDict的存在。
+https://www.cnblogs.com/xuchunlin/p/7763711.html
 - 知道深拷贝和浅拷贝在python中的实现方式。
 - 知道str，bytes和字符串编码的关系以及其相互转换的方法。
 - 知道python代码的中文编码处理，以及如何处理乱码。
@@ -59,16 +63,17 @@
 # 并发
 - 知道GIL的限制以及与多线程的关系。
 - 知道python中的多进程和多线程模型，知道多进程和多线程下间的通信实现。
+- 知道进程池和线程池在python中对应的库和使用方式。
 - 知道python中多线程间常用的同步原语的使用方式。
 - 知道asyncio的使用方式和使用场景。
 
 # 面向对象
 - 知道python的命名空间查找规则（LEGB）。
 - 知道python多继承的查找规则（MRO）。
+> http://python.jobbole.com/85685/
 - 知道property的含义以及其描述器实现。
 - 知道__slots__的含义以及使用场景。
 - 知道如何定义和使用元类，了解其使用场景。
-- 知道进程池和线程池在python中对应的库和使用方式。
 - 知道python中type和object之间的关系。
 - 知道鸭子类型（duck typing）的含义与其在python中的表现形式。
 - 知道函数和方法的区别，知道绑定方法（bound-method）与未绑定方法（unbound-method）的关系。
