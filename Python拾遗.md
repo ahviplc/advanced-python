@@ -2,30 +2,48 @@
 - 知道python的语法，缩进和符号对应的含义。
 - 知道PEP8常见的范式以及代码格式化方法。
 - 知道python所有关键字的含义和使用。
+> del assert
 - 知道python中大部分常用的类型（布尔值，字符串类型，数字类型，序列，集合，字典，生成器...）。
 - 知道如何编写pythonic的代码（上下文管理器，推导表达式，装饰器，切片…）。
 - 知道如何避免python中的一些坑，如可变的默认参数，闭包的迟绑定。
+> 默认参数必须指向不可变对象
 - 知道python 2.x和3.x的主要差异。
+> http://www.runoob.com/python/python-2x-3x.html
 - 知道python大多数常用的标准库以及其用途。
 - 知道os和sys库常用的方法，和操作文件和目录的方式。
 - 知道python中datetime库的常用操作。
+```python
+from datetiem import datetime
+now = datetime.now()
+cday = datetime.strptime('2015-6-1 18:19:59', '%Y-%m-%d %H:%M:%S')
+https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/001431937554888869fb52b812243dda6103214cd61d0c2000
+```
 - 知道普通文件/二进制文件读写的方式，知道StringIO和BytesIO的用途。
+> StringIO和BytesIO用于内存读写
 - 知道以单下划线开头、双下划线开头和双下划线包围的变量分别代表着什么含义。
+> http://python.jobbole.com/81129/
 - 知道python中的模块定义，以及导入模块的各种姿势。
 - 知道知道global，local和nonlocal关键字在python中的含义和其使用场景。
+> http://www.jb51.net/article/91422.htm
+> http://www.jb51.net/article/57677.htm
 - 知道python中==与is的区别。
+> is 用于判断两个变量引用对象是否为同一个， == 用于判断引用变量的值是否相等。
 - 知道for-else，try-else的含义和用途。
 
 # 函数式
 - 知道python中的函数式编程以及map、filter的使用。
 - 知道装饰器中添加functools.wraps的含义与作用。
+> functools.wraps 可以将原函数对象的指定属性复制给包装函数对象, 默认有 __module__、__name__、__doc__,或者通过参数选择。
 
 # 虚拟机
 - 知道python最常见的解释器有哪些。
 - 知道python中弱引用的使用方式，知道python中gc的回收算法方式以及回收规则。
+> http://python.jobbole.com/85431/
 - 知道sys.settrace和sys.setprofile在python中的用途和使用方式。
+> http://www.cnblogs.com/xuchunlin/p/7748311.html
 - 知道.pyc文件的含义，清楚python代码大概的执行过程。
 - 知道_在python解释器中的含义。
+> "_"代表交互式解释器会话中上一条执行的语句的结果。
 
 # 数据结构
 - 知道list，tuple，dict，set等的时间复杂度和空间复杂度。
